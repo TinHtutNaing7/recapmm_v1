@@ -1,0 +1,2023 @@
+<!DOCTYPE html>
+<html lang="my" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>RecapMM — မြန်မာဘာသာပြန် Script Generator</title>
+
+  <!-- Google Fonts: Inter & Noto Sans Myanmar -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Myanmar:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '"Noto Sans Myanmar"', 'sans-serif'],
+            myanmar: ['"Noto Sans Myanmar"', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            espresso: {
+              950: '#0d0805',
+              900: '#120b07',
+              850: '#18100b',
+              800: '#1d140e',
+              700: '#2d1f17',
+              600: '#3f2c21',
+            },
+            brand: {
+              amber: '#ffa033',
+              orange: '#ff7b1c',
+              deep: '#ff5d10',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Base dark espresso aesthetic and smooth typography */
+    :root {
+      color-scheme: dark;
+    }
+
+    html, body {
+      background-color: #0e0906;
+      color: #f8f2ec;
+      font-family: 'Inter', 'Noto Sans Myanmar', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      scroll-behavior: smooth;
+    }
+
+    /* Ambient warm orange radial glow matching the RecapMM header atmosphere */
+    .ambient-bg {
+      background-color: #0e0906;
+      background-image:
+        radial-gradient(ellipse 85% 320px at 50% -40px, rgba(255, 118, 25, 0.28) 0%, rgba(168, 66, 12, 0.12) 45%, rgba(14, 9, 6, 0) 80%),
+        linear-gradient(180deg, #120b07 0%, #0e0906 55%, #0c0705 100%);
+      background-attachment: fixed;
+    }
+
+    /* Vibrant orange-to-amber active card & CTA gradient */
+    .orange-gradient {
+      background: linear-gradient(135deg, #ffa133 0%, #ff7a1a 52%, #ff5e12 100%);
+    }
+
+    .orange-gradient-hover:hover {
+      background: linear-gradient(135deg, #ffae47 0%, #ff8428 52%, #ff6a22 100%);
+    }
+
+    .brand-text-gradient {
+      background: linear-gradient(90deg, #ff962e 0%, #ff6514 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Selectable card transitions */
+    .select-card {
+      transition: transform 0.16s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+    .select-card:active {
+      transform: scale(0.985);
+    }
+
+    .select-card-active {
+      background: linear-gradient(135deg, #ffa234 0%, #ff7619 60%, #ff6112 100%);
+      border-color: rgba(255, 196, 115, 0.55);
+      box-shadow: 0 8px 24px -6px rgba(255, 108, 20, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+      color: #1c0f06;
+    }
+
+    .select-card-inactive {
+      background: rgba(22, 15, 11, 0.82);
+      border-color: #2e2018;
+      color: #f4ece5;
+    }
+    .select-card-inactive:hover {
+      border-color: #4a3325;
+      background: rgba(31, 21, 15, 0.9);
+    }
+
+    /* Dashed upload dropzone state */
+    .dropzone-active {
+      border-color: #ff8c24 !important;
+      background: rgba(255, 125, 26, 0.1) !important;
+    }
+
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #120b07;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #36251b;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #4e3628;
+    }
+
+    /* Modal animations */
+    @keyframes slideUpModal {
+      from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    .animate-modal {
+      animation: slideUpModal 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(255, 126, 28, 0.4);
+      }
+      50% {
+        box-shadow: 0 0 24px 4px rgba(255, 126, 28, 0.28);
+      }
+    }
+    .cta-glow {
+      animation: pulseGlow 2.8s infinite;
+    }
+
+    /* Myanmar text readability */
+    .mm-leading {
+      line-height: 1.75;
+    }
+  </style>
+</head>
+<body class="ambient-bg min-h-screen antialiased selection:bg-orange-500/30 selection:text-orange-100">
+
+  <!-- Main Mobile-First Centered App Container -->
+  <div class="w-full max-w-[500px] mx-auto min-h-screen flex flex-col px-4 pb-12 pt-3 relative">
+
+    <!-- ==================== 1. TOP NAVIGATION BAR ==================== -->
+    <header class="flex items-center justify-between py-3 mb-3 sticky top-0 z-30 backdrop-blur-md bg-[#120b07]/70 -mx-4 px-4 border-b border-[#2a1d15]/60">
+      <!-- Brand Logo -->
+      <a href="#" onclick="event.preventDefault(); window.scrollTo({top: 0, behavior: 'smooth'});" class="flex items-center gap-1.5 group focus:outline-none">
+        <span class="text-[22px] font-extrabold tracking-tight brand-text-gradient select-none">RecapMM</span>
+      </a>
+
+      <!-- Right Controls: History Pill & Avatar Button -->
+      <div class="flex items-center gap-2.5">
+        <!-- History Pill Button -->
+        <button
+          id="openHistoryBtn"
+          type="button"
+          class="relative flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#1b120d]/95 hover:bg-[#261a13] border border-[#36261c] text-[#f5ece4] text-[13px] font-medium transition-all active:scale-95 shadow-sm"
+          aria-label="မှတ်တမ်း ဖွင့်ရန်"
+        >
+          <!-- History Clock SVG -->
+          <svg class="w-4 h-4 text-[#d8c6b8]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+            <path d="M3 3v5h5" />
+            <path d="M12 7v5l3 2" />
+          </svg>
+          <span>မှတ်တမ်း</span>
+          <span id="historyCountBadge" class="hidden ml-0.5 px-1.5 py-0.5 text-[10px] font-bold rounded-full orange-gradient text-[#1a0d05] leading-none">0</span>
+        </button>
+
+        <!-- Circular Avatar "Z" with Online Green Dot -->
+        <button
+          id="openSettingsBtn"
+          type="button"
+          title="Settings & API Key"
+          aria-label="Settings ဖွင့်ရန်"
+          class="relative w-10 h-10 rounded-full orange-gradient flex items-center justify-center shadow-md shadow-orange-950/50 transition-transform active:scale-95 border border-orange-300/30"
+        >
+          <span class="text-[#1a0d05] font-extrabold text-base leading-none select-none">Z</span>
+          <!-- Green Online Status Dot -->
+          <span id="statusDot" class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-400 border-[2.5px] border-[#120b07]" title="Ready"></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ==================== 2. VIDEO UPLOAD / TEXT INPUT CARD ==================== -->
+    <section class="mb-5">
+      <div
+        id="uploadContainer"
+        class="rounded-3xl border-2 border-dashed border-[#38271d] bg-[#17100b]/80 p-4 transition-all duration-200 relative overflow-hidden"
+      >
+        <!-- Subtle Input Mode Toggle Tabs -->
+        <div class="flex items-center justify-center mb-4">
+          <div class="inline-flex p-1 rounded-full bg-[#110b08] border border-[#2b1e16] text-xs font-medium">
+            <button
+              id="tabVideoBtn"
+              type="button"
+              class="px-3.5 py-1.5 rounded-full transition-all orange-gradient text-[#1b0e06] font-semibold shadow-sm"
+            >
+              Video Upload
+            </button>
+            <button
+              id="tabTextBtn"
+              type="button"
+              class="px-3.5 py-1.5 rounded-full transition-all text-[#b8a393] hover:text-[#f5ece4]"
+            >
+              Text / SRT ထည့်ရန်
+            </button>
+          </div>
+        </div>
+
+        <!-- PANEL A: Video Upload Dropzone -->
+        <div id="videoInputPanel">
+          <!-- Hidden File Input -->
+          <input
+            id="videoFileInput"
+            type="file"
+            accept="video/mp4,video/quicktime,video/webm,video/*"
+            class="hidden"
+          />
+
+          <!-- Empty State (Click / Drag-and-Drop) -->
+          <div
+            id="uploadEmptyState"
+            role="button"
+            tabindex="0"
+            class="flex flex-col items-center justify-center text-center py-6 px-3 cursor-pointer rounded-2xl hover:bg-[#1f150f]/60 transition-colors"
+          >
+            <!-- Orange Upload-Tray Icon -->
+            <div class="mb-3.5 w-12 h-12 rounded-2xl bg-[#24170f] border border-[#3a261a] flex items-center justify-center shadow-inner">
+              <svg class="w-7 h-7 text-[#ff8b24]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+            </div>
+
+            <h2 class="text-[17px] font-bold text-[#faf4ef] mb-1.5 tracking-tight">
+              Video ကို ရွေးပါ
+            </h2>
+            <p class="text-[12.5px] leading-relaxed">
+              <span class="text-[#ff9c3b] font-medium">အများဆုံး 5 မိနစ်</span>
+              <span class="text-[#8f7b6d]"> · 500MB · MP4 / MOV / WEBM</span>
+            </p>
+            <p class="text-[11px] text-[#756255] mt-2">
+              နှိပ်၍ ရွေးချယ်ပါ သို့မဟုတ် Video ကို ဆွဲထည့်ပါ
+            </p>
+          </div>
+
+          <!-- Selected Video Preview State -->
+          <div id="videoPreviewState" class="hidden space-y-3">
+            <div class="relative rounded-2xl overflow-hidden bg-black border border-[#34241a]">
+              <video
+                id="videoPreviewPlayer"
+                controls
+                playsinline
+                preload="metadata"
+                class="w-full max-h-[240px] object-contain bg-black"
+              ></video>
+            </div>
+
+            <!-- Video Metadata & Processing Badge -->
+            <div class="bg-[#120c08] border border-[#2c1f17] rounded-2xl p-3 space-y-2.5">
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0 flex-1">
+                  <p id="videoFileName" class="text-[13.5px] font-semibold text-[#faf3ed] truncate">video.mp4</p>
+                  <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+                    <span id="videoSizeBadge" class="px-2 py-0.5 rounded-md bg-[#231811] border border-[#38271c] text-[11px] text-[#e0cbbb] font-medium">0 MB</span>
+                    <span id="videoDurationBadge" class="px-2 py-0.5 rounded-md bg-[#231811] border border-[#38271c] text-[11px] text-[#ffad4d] font-medium">0:00</span>
+                    <span id="videoMethodBadge" class="px-2 py-0.5 rounded-md bg-emerald-950/60 border border-emerald-700/40 text-[11px] text-emerald-300 font-medium">Direct Video AI</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1.5 shrink-0">
+                  <button
+                    id="changeVideoBtn"
+                    type="button"
+                    class="px-2.5 py-1.5 rounded-xl bg-[#251a13] hover:bg-[#332319] border border-[#3d2a1f] text-[12px] text-[#f5ece4] font-medium transition-colors"
+                  >
+                    ပြောင်းမယ်
+                  </button>
+                  <button
+                    id="removeVideoBtn"
+                    type="button"
+                    aria-label="Video ဖျက်ရန်"
+                    class="p-1.5 rounded-xl bg-red-950/40 hover:bg-red-900/50 border border-red-800/40 text-red-300 transition-colors"
+                  >
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Info note for large videos (> 15MB frame sampling) -->
+              <div id="largeVideoNotice" class="hidden text-[11.5px] text-amber-200/90 bg-amber-950/35 border border-amber-700/35 rounded-xl px-3 py-2 leading-relaxed">
+                Video ဖိုင်အရွယ်အစား 15MB ထက်ကျော်သောကြောင့် Free Browser limit အတွင်း မြန်ဆန်စွာ အလုပ်လုပ်နိုင်ရန် <strong>Smart 8-Frame Sampling</strong> စနစ်ဖြင့် အလိုအလျောက် ခွဲခြမ်းစိတ်ဖြာပေးပါမယ်။
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL B: Text / SRT Paste Mode -->
+        <div id="textInputPanel" class="hidden space-y-2.5">
+          <div class="flex items-center justify-between">
+            <label for="transcriptInput" class="text-[12.5px] font-medium text-[#d8c5b6]">
+              Subtitle (SRT) သို့မဟုတ် Transcript ထည့်ပါ
+            </label>
+            <button
+              id="loadSampleTextBtn"
+              type="button"
+              class="text-[11.5px] font-medium text-[#ff9a36] hover:text-[#ffb463] px-2.5 py-1 rounded-lg bg-[#251911] border border-[#3a271b] transition-colors"
+            >
+              Sample စမ်းကြည့်မယ်
+            </button>
+          </div>
+          <textarea
+            id="transcriptInput"
+            rows="5"
+            placeholder="ဥပမာ -&#10;00:00:01,000 --> 00:00:05,000&#10;He woke up in an empty city with no memory of how he got there..."
+            class="w-full rounded-2xl bg-[#110b08] border border-[#312219] focus:border-[#ff8a24] focus:ring-1 focus:ring-[#ff8a24]/40 focus:outline-none p-3.5 text-[13.5px] text-[#f6efe9] placeholder-[#6f5c50] resize-y leading-relaxed"
+          ></textarea>
+          <div class="flex items-center justify-between text-[11.5px] text-[#8d796b]">
+            <span>English, Thai, Korean, Chinese စသည်ဖြင့် ဘာသာစကားမရွေး ထည့်နိုင်ပါတယ်</span>
+            <span id="transcriptCharCount">0 chars</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 3. STEP 1 CARD: မြန်မာဘာသာပြန် Script ==================== -->
+    <section class="rounded-3xl bg-[#1a120d]/95 border border-[#2e2018] p-5 shadow-2xl shadow-black/50 mb-5">
+      <!-- Card Header -->
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-7 h-7 rounded-full orange-gradient flex items-center justify-center text-[#1a0d05] font-extrabold text-[13px] shadow-md shadow-orange-950/40 shrink-0">
+          1
+        </div>
+        <h2 class="text-[17px] font-bold text-[#faf4ef] tracking-tight">
+          မြန်မာဘာသာပြန် Script
+        </h2>
+      </div>
+
+      <!-- Mode Selector (2-Column Grid) -->
+      <div class="grid grid-cols-2 gap-3 mb-5" role="radiogroup" aria-label="Script Mode">
+        <!-- Mode 1: Recap Mode (Default Selected) -->
+        <button
+          id="modeRecapBtn"
+          type="button"
+          data-mode="recap"
+          aria-pressed="true"
+          class="select-card select-card-active rounded-2xl p-3.5 text-left border flex flex-col justify-between min-h-[96px]"
+        >
+          <span class="font-bold text-[14.5px] leading-snug mb-1.5 block">Recap Mode</span>
+          <span class="mode-sub text-[12px] leading-relaxed opacity-85 mm-leading">
+            ဇာတ်ကြောင်းပြောသူ ပုံစံ Script
+          </span>
+        </button>
+
+        <!-- Mode 2: Dubbing Mode -->
+        <button
+          id="modeDubbingBtn"
+          type="button"
+          data-mode="dubbing"
+          aria-pressed="false"
+          class="select-card select-card-inactive rounded-2xl p-3.5 text-left border flex flex-col justify-between min-h-[96px]"
+        >
+          <span class="font-bold text-[14.5px] leading-snug mb-1.5 block">Dubbing Mode</span>
+          <span class="mode-sub text-[12px] leading-relaxed text-[#a89485] mm-leading">
+            Video အပြည့် - ပြောစကားတိုင်း မြန်မာလို အစားထိုး
+          </span>
+        </button>
+      </div>
+
+      <!-- Sub-Section Label: ဇာတ်ကြောင်းပုံစံ -->
+      <div class="mb-3 flex items-center justify-between">
+        <h3 class="text-[13.5px] font-medium text-[#b8a394]">ဇာတ်ကြောင်းပုံစံ</h3>
+      </div>
+
+      <!-- Style Selector (Vertical Stack of 3 Cards) -->
+      <div class="space-y-3 mb-5" role="radiogroup" aria-label="ဇာတ်ကြောင်းပုံစံ">
+        <!-- Option 1: Direct Translation (Default Selected) -->
+        <button
+          type="button"
+          data-style="direct"
+          aria-pressed="true"
+          class="style-card select-card select-card-active w-full rounded-2xl px-4 py-3.5 text-left border block"
+        >
+          <div class="font-bold text-[14.5px] mb-1">Direct Translation</div>
+          <div class="style-desc text-[12.5px] leading-relaxed opacity-85 mm-leading">
+            မူရင်း POV နှင့် အဓိပ္ပာယ်ကို မပြောင်းဘဲ ဘာသာပြန်မယ်
+          </div>
+        </button>
+
+        <!-- Option 2: Third Person -->
+        <button
+          type="button"
+          data-style="third"
+          aria-pressed="false"
+          class="style-card select-card select-card-inactive w-full rounded-2xl px-4 py-3.5 text-left border block"
+        >
+          <div class="font-bold text-[14.5px] mb-1">Third Person</div>
+          <div class="style-desc text-[12.5px] leading-relaxed text-[#a89485] mm-leading">
+            ပြင်ပဇာတ်ကြောင်းပြောသူအနေနဲ့ ဖြစ်စဉ်ကို ပြောမယ်
+          </div>
+        </button>
+
+        <!-- Option 3: First Person -->
+        <button
+          type="button"
+          data-style="first"
+          aria-pressed="false"
+          class="style-card select-card select-card-inactive w-full rounded-2xl px-4 py-3.5 text-left border block"
+        >
+          <div class="font-bold text-[14.5px] mb-1">First Person</div>
+          <div class="style-desc text-[12.5px] leading-relaxed text-[#a89485] mm-leading">
+            အဓိကဇာတ်ကောင် ကိုယ်တိုင်ပြောသလို ပြောမယ်
+          </div>
+        </button>
+      </div>
+
+      <!-- ==================== 4. EXTRA HELPFUL OPTIONS: TONE / LENGTH ==================== -->
+      <div class="pt-4 border-t border-[#2b1e16] mb-5">
+        <div class="flex items-center justify-between mb-2.5">
+          <span class="text-[13px] font-medium text-[#b8a394]">Script အရှည် / Tone</span>
+          <span class="text-[11px] text-[#7c695b]">Optional</span>
+        </div>
+
+        <!-- Tone Selector Pills -->
+        <div class="grid grid-cols-3 gap-2 mb-3">
+          <button
+            type="button"
+            data-tone="normal"
+            class="tone-btn px-2.5 py-2 rounded-xl text-[12px] font-semibold border transition-all bg-[#ff841f]/20 border-[#ff8c28] text-[#ffad52]"
+          >
+            Normal
+          </button>
+          <button
+            type="button"
+            data-tone="dramatic"
+            class="tone-btn px-2.5 py-2 rounded-xl text-[12px] font-medium border transition-all bg-[#140d09] border-[#2d1f17] text-[#a89485] hover:border-[#473124]"
+          >
+            Movie Recap
+          </button>
+          <button
+            type="button"
+            data-tone="casual"
+            class="tone-btn px-2.5 py-2 rounded-xl text-[12px] font-medium border transition-all bg-[#140d09] border-[#2d1f17] text-[#a89485] hover:border-[#473124]"
+          >
+            Casual ပြောဟန်
+          </button>
+        </div>
+
+        <!-- Script Length Selector -->
+        <div class="flex items-center gap-2">
+          <span class="text-[11.5px] text-[#8f7b6d] shrink-0">အရှည်:</span>
+          <div class="flex-1 grid grid-cols-3 gap-1.5">
+            <button
+              type="button"
+              data-length="short"
+              class="length-btn py-1.5 rounded-lg text-[11.5px] font-medium border bg-[#140d09] border-[#2c1f17] text-[#9c8778] transition-all"
+            >
+              အတိုချုပ်
+            </button>
+            <button
+              type="button"
+              data-length="standard"
+              class="length-btn py-1.5 rounded-lg text-[11.5px] font-semibold border bg-[#ff841f]/20 border-[#ff8c28] text-[#ffad52] transition-all"
+            >
+              ပုံမှန်
+            </button>
+            <button
+              type="button"
+              data-length="detailed"
+              class="length-btn py-1.5 rounded-lg text-[11.5px] font-medium border bg-[#140d09] border-[#2c1f17] text-[#9c8778] transition-all"
+            >
+              အသေးစိတ်
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Primary Generate CTA Button -->
+      <button
+        id="generateBtn"
+        type="button"
+        class="w-full py-4 px-5 rounded-2xl orange-gradient orange-gradient-hover cta-glow text-[#1a0d05] font-extrabold text-[15.5px] tracking-tight flex items-center justify-center gap-2.5 shadow-lg shadow-orange-950/60 transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
+      >
+        <svg id="generateIcon" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3l1.9 5.8L20 10.7l-6.1 1.9L12 18.5l-1.9-5.9L4 10.7l6.1-1.9L12 3z" />
+        </svg>
+        <span id="generateBtnText">Script ဖန်တီးမယ်</span>
+      </button>
+
+      <!-- Animated Progress Panel (Visible during generation) -->
+      <div id="progressPanel" class="hidden mt-4 rounded-2xl bg-[#130c08] border border-[#352419] p-4 space-y-2.5">
+        <div class="flex items-center justify-between text-[13px]">
+          <div class="flex items-center gap-2.5 text-[#ffad4d] font-medium">
+            <svg class="w-4 h-4 animate-spin shrink-0" viewBox="0 0 24 24" fill="none">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+              <path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8v3a5 5 0 00-5 5H4z"></path>
+            </svg>
+            <span id="progressStatusText">AI ဖြင့် ခွဲခြမ်းစိတ်ဖြာနေပါသည်...</span>
+          </div>
+          <span id="progressPercentText" class="text-[12px] font-bold text-[#ff8f29]">15%</span>
+        </div>
+        <div class="w-full h-2 rounded-full bg-[#241811] overflow-hidden">
+          <div id="progressBarFill" class="h-full orange-gradient rounded-full transition-all duration-500" style="width: 15%"></div>
+        </div>
+        <p id="progressSubNote" class="text-[11.5px] text-[#8d796b]">
+          ခေတ္တစောင့်ဆိုင်းပေးပါ... Video အရှည်ပေါ်မူတည်၍ စက္ကန့်အနည်းငယ် ကြာနိုင်ပါသည်။
+        </p>
+      </div>
+
+      <!-- Inline Error Banner -->
+      <div id="errorBanner" class="hidden mt-4 rounded-2xl bg-red-950/45 border border-red-800/60 p-3.5 text-[12.5px] text-red-200 flex items-start gap-2.5">
+        <svg class="w-4 h-4 text-red-400 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+        <div class="flex-1 leading-relaxed" id="errorBannerText"></div>
+      </div>
+    </section>
+
+    <!-- ==================== 5. STEP 2 CARD: RESULT OUTPUT ==================== -->
+    <section
+      id="resultSection"
+      class="hidden rounded-3xl bg-[#1a120d]/95 border border-[#3a271b] p-5 shadow-2xl shadow-black/50 mb-6 animate-modal"
+    >
+      <!-- Result Header -->
+      <div class="flex items-center justify-between gap-2 mb-3.5">
+        <div class="flex items-center gap-3">
+          <div class="w-7 h-7 rounded-full orange-gradient flex items-center justify-center text-[#1a0d05] font-extrabold text-[13px] shrink-0">
+            2
+          </div>
+          <div>
+            <h2 class="text-[16.5px] font-bold text-[#faf4ef] leading-tight">ထွက်ရှိလာသော Script</h2>
+            <p id="resultMetaLine" class="text-[11.5px] text-[#a48f80] mt-0.5">Recap Mode · Direct Translation</p>
+          </div>
+        </div>
+        <span id="resultStatsBadge" class="px-2.5 py-1 rounded-full bg-[#241811] border border-[#38261b] text-[11px] text-[#ffad4d] font-medium shrink-0">
+          0 စာလုံး
+        </span>
+      </div>
+
+      <!-- Frame-Sampling Info Banner (if applicable) -->
+      <div id="resultSamplingInfo" class="hidden mb-3 rounded-xl bg-amber-950/35 border border-amber-700/40 px-3 py-2 text-[11.5px] text-amber-200/90 leading-relaxed">
+        Video ဖိုင်အရွယ်အစား 15MB ကျော်သဖြင့် 8-Frame Sampling စနစ်ဖြင့် မြင်ကွင်းများကို ဖတ်ရှုပြီး Script ဖန်တီးထားပါသည်။
+      </div>
+
+      <!-- Editable Script Textarea -->
+      <div class="mb-4">
+        <textarea
+          id="scriptOutputArea"
+          rows="11"
+          class="w-full rounded-2xl bg-[#110b08] border border-[#32231a] focus:border-[#ff8b24] focus:ring-1 focus:ring-[#ff8b24]/40 focus:outline-none p-4 text-[14px] text-[#f7f0ea] mm-leading resize-y font-myanmar"
+          placeholder="Script ဤနေရာတွင် ပေါ်လာပါမည်..."
+        ></textarea>
+        <div class="flex items-center justify-between mt-1.5 px-1">
+          <span class="text-[11px] text-[#836f62]">စာသားများကို တိုက်ရိုက်ပြင်ဆင်နိုင်ပါသည်</span>
+          <button
+            id="saveEditBtn"
+            type="button"
+            class="hidden text-[11.5px] font-semibold text-[#ff9c38] hover:text-[#ffb766]"
+          >
+            ပြင်ဆင်မှု သိမ်းမယ်
+          </button>
+        </div>
+      </div>
+
+      <!-- Action Buttons Row -->
+      <div class="grid grid-cols-3 gap-2.5">
+        <!-- Copy Button -->
+        <button
+          id="copyScriptBtn"
+          type="button"
+          class="py-2.5 px-2 rounded-xl orange-gradient text-[#1a0d05] font-bold text-[12.5px] flex items-center justify-center gap-1.5 transition-transform active:scale-95 shadow-sm"
+        >
+          <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+          </svg>
+          <span>ကူးယူမယ်</span>
+        </button>
+
+        <!-- Download TXT Button -->
+        <button
+          id="downloadTxtBtn"
+          type="button"
+          class="py-2.5 px-2 rounded-xl bg-[#241811] hover:bg-[#312117] border border-[#3b291d] text-[#f4ebe3] font-semibold text-[12.5px] flex items-center justify-center gap-1.5 transition-all active:scale-95"
+        >
+          <svg class="w-4 h-4 text-[#ff9c38] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          <span>TXT သိမ်းမယ်</span>
+        </button>
+
+        <!-- Download SRT Button -->
+        <button
+          id="downloadSrtBtn"
+          type="button"
+          class="py-2.5 px-2 rounded-xl bg-[#241811] hover:bg-[#312117] border border-[#3b291d] text-[#f4ebe3] font-semibold text-[12.5px] flex items-center justify-center gap-1.5 transition-all active:scale-95"
+        >
+          <svg class="w-4 h-4 text-[#ff9c38] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="M7 15h4M15 15h2M7 11h2M13 11h4" />
+          </svg>
+          <span>SRT သိမ်းမယ်</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Subtle Footer -->
+    <footer class="mt-auto pt-2 text-center text-[11.5px] text-[#6e5c50]">
+      RecapMM · 100% Frontend AI Video Script Studio
+    </footer>
+  </div>
+
+  <!-- ==================== HISTORY MODAL ("မှတ်တမ်း") ==================== -->
+  <div
+    id="historyModal"
+    class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="historyModalTitle"
+  >
+    <div class="w-full max-w-[480px] max-h-[85vh] bg-[#160f0b] border border-[#332319] rounded-t-3xl sm:rounded-3xl flex flex-col overflow-hidden shadow-2xl animate-modal">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between px-5 py-4 border-b border-[#2a1d15]">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-full bg-[#241811] border border-[#3a271b] flex items-center justify-center text-[#ff962e]">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+              <path d="M3 3v5h5" />
+              <path d="M12 7v5l3 2" />
+            </svg>
+          </div>
+          <div>
+            <h3 id="historyModalTitle" class="text-[16px] font-bold text-[#faf4ef]">မှတ်တမ်း</h3>
+            <p class="text-[11.5px] text-[#8d796b]">သိမ်းဆည်းထားသော Script များ</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button
+            id="clearAllHistoryBtn"
+            type="button"
+            class="hidden px-2.5 py-1.5 rounded-xl bg-red-950/40 hover:bg-red-900/50 border border-red-800/40 text-[11.5px] text-red-300 font-medium transition-colors"
+          >
+            အားလုံးဖျက်မယ်
+          </button>
+          <button
+            id="closeHistoryBtn"
+            type="button"
+            aria-label="ပိတ်ရန်"
+            class="p-2 rounded-full bg-[#221710] hover:bg-[#302117] text-[#cbb8a9] transition-colors"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Inline Confirm Clear All Bar -->
+      <div id="confirmClearBar" class="hidden px-5 py-3 bg-red-950/50 border-b border-red-900/50 flex items-center justify-between gap-2 text-[12px]">
+        <span class="text-red-200">မှတ်တမ်းအားလုံးကို ဖျက်မှာ သေချာပါသလား?</span>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button id="cancelClearAllBtn" type="button" class="px-2.5 py-1 rounded-lg bg-[#251a13] text-[#e5d5c8]">မဖျက်တော့ပါ</button>
+          <button id="confirmClearAllBtn" type="button" class="px-2.5 py-1 rounded-lg bg-red-600 text-white font-semibold">ဖျက်မယ်</button>
+        </div>
+      </div>
+
+      <!-- History List Container -->
+      <div id="historyList" class="flex-1 overflow-y-auto p-4 space-y-3">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SETTINGS MODAL (AVATAR "Z") ==================== -->
+  <div
+    id="settingsModal"
+    class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="settingsModalTitle"
+  >
+    <div class="w-full max-w-[480px] max-h-[88vh] bg-[#160f0b] border border-[#332319] rounded-t-3xl sm:rounded-3xl flex flex-col overflow-hidden shadow-2xl animate-modal">
+      <!-- Header -->
+      <div class="flex items-center justify-between px-5 py-4 border-b border-[#2a1d15]">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full orange-gradient flex items-center justify-center text-[#1a0d05] font-extrabold text-sm">Z</div>
+          <div>
+            <h3 id="settingsModalTitle" class="text-[16px] font-bold text-[#faf4ef]">Frontend Settings & Free Hosting</h3>
+            <p class="text-[11.5px] text-[#8d796b]">API Key နှင့် အခမဲ့အသုံးပြုနည်း</p>
+          </div>
+        </div>
+        <button
+          id="closeSettingsBtn"
+          type="button"
+          aria-label="ပိတ်ရန်"
+          class="p-2 rounded-full bg-[#221710] hover:bg-[#302117] text-[#cbb8a9] transition-colors"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="p-5 overflow-y-auto space-y-5">
+        <!-- Custom API Key Card -->
+        <div class="rounded-2xl bg-[#110b08] border border-[#2d1f17] p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <label for="customApiKeyInput" class="text-[13.5px] font-semibold text-[#f5ece4]">
+              Google AI Studio API Key (Optional)
+            </label>
+            <span id="apiKeyModeBadge" class="px-2 py-0.5 rounded-full text-[10.5px] font-semibold bg-emerald-950/60 border border-emerald-700/40 text-emerald-300">
+              Built-in Active
+            </span>
+          </div>
+          <p class="text-[12px] text-[#9b8778] leading-relaxed">
+            ဤ Preview အတွင်း၌ API Key ထည့်စရာမလိုဘဲ တိုက်ရိုက်သုံးနိုင်ပါသည်။ ကိုယ်ပိုင် Website အဖြစ် အပြင်တွင် အခမဲ့တင်သုံးလိုပါက Google AI Studio မှ Free Gemini API Key ကို ထည့်သွင်းသိမ်းဆည်းထားနိုင်ပါသည်။
+          </p>
+
+          <div class="relative">
+            <input
+              id="customApiKeyInput"
+              type="password"
+              placeholder="AIzaSy... (ကိုယ်ပိုင် Key ထည့်ရန်)"
+              class="w-full rounded-xl bg-[#1a120d] border border-[#36261c] focus:border-[#ff8a24] focus:outline-none pl-3.5 pr-11 py-2.5 text-[13px] text-[#faf4ef] placeholder-[#6c594d]"
+            />
+            <button
+              id="toggleKeyVisibilityBtn"
+              type="button"
+              class="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 text-[#9c8778] hover:text-[#f5ece4]"
+              aria-label="Toggle visibility"
+            >
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button
+              id="saveApiKeyBtn"
+              type="button"
+              class="flex-1 py-2.5 rounded-xl orange-gradient text-[#1a0d05] font-bold text-[13px] transition-transform active:scale-95"
+            >
+              Key သိမ်းမယ်
+            </button>
+            <button
+              id="clearApiKeyBtn"
+              type="button"
+              class="px-4 py-2.5 rounded-xl bg-[#241811] hover:bg-[#312117] border border-[#3a271c] text-[#d6c2b4] text-[13px] font-medium"
+            >
+              ဖျက်မယ်
+            </button>
+          </div>
+          <p class="text-[11px] text-[#7a675a]">
+            Key ကို သင့် Browser ၏ localStorage အတွင်း၌သာ သိမ်းဆည်းမည်ဖြစ်ပြီး မည်သည့် Server သို့မျှ မပို့ပါ။
+          </p>
+        </div>
+
+        <!-- Free Frontend Self-Hosting Guide -->
+        <div class="rounded-2xl bg-[#110b08] border border-[#2d1f17] p-4 space-y-2.5">
+          <h4 class="text-[13.5px] font-bold text-[#ffad4d] flex items-center gap-1.5">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="2" y1="12" x2="22" y2="12" />
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+            </svg>
+            100% Free Frontend တင်သုံးနည်း
+          </h4>
+          <ol class="text-[12px] text-[#b49f90] space-y-1.5 list-decimal list-inside leading-relaxed">
+            <li>ဤ HTML ဖိုင်တစ်ခုတည်းကို <code class="text-[#ffad4d] bg-[#221710] px-1.5 py-0.5 rounded">index.html</code> အဖြစ် သိမ်းပါ။</li>
+            <li><strong>GitHub Pages</strong>, <strong>Netlify Drop</strong>, သို့မဟုတ် <strong>Vercel</strong> တွင် အခမဲ့တင်ပါ (Backend server လုံးဝမလိုပါ)။</li>
+            <li><span class="text-[#f5ece4]">aistudio.google.com</span> မှ Free Gemini API Key ယူပြီး အပေါ်ရှိ Settings တွင် ထည့်သုံးရုံဖြင့် ပြီးပြည့်စုံပါပြီ။</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden Canvas for Video Frame Sampling (> 15MB videos) -->
+  <canvas id="frameExtractorCanvas" class="hidden"></canvas>
+
+  <!-- Toast Notification Container -->
+  <div
+    id="toastContainer"
+    class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] pointer-events-none flex flex-col items-center gap-2 w-[90%] max-w-[420px]"
+  ></div>
+
+  <!-- ==================== APPLICATION SCRIPT ==================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* =========================================================================
+       * 1. STATE & CONSTANTS
+       * ========================================================================= */
+      const STORAGE_HISTORY_KEY = 'recapmm_history_v1';
+      const STORAGE_APIKEY_KEY = 'recapmm_custom_api_key_v1';
+      const DIRECT_VIDEO_MAX_BYTES = 15 * 1024 * 1024; // 15 MB threshold for direct inline video
+      const MAX_UPLOAD_BYTES = 500 * 1024 * 1024;      // 500 MB UI limit
+      const SAMPLE_FRAME_COUNT = 8;                     // 8 evenly spaced frames for large videos
+
+      // Default empty API key (Canvas injects runtime key automatically when left empty)
+      const defaultApiKey = "";
+
+      const appState = {
+        inputTab: 'video',         // 'video' | 'text'
+        selectedFile: null,
+        selectedFileUrl: null,
+        videoDuration: 0,
+        mode: 'recap',             // 'recap' | 'dubbing'
+        style: 'direct',           // 'direct' | 'third' | 'first'
+        tone: 'normal',            // 'normal' | 'dramatic' | 'casual'
+        length: 'standard',        // 'short' | 'standard' | 'detailed'
+        isGenerating: false,
+        currentHistoryId: null,
+        usedFrameSampling: false,
+      };
+
+      /* =========================================================================
+       * 2. DOM REFERENCES
+       * ========================================================================= */
+      const el = {
+        // Header & Modals
+        openHistoryBtn: document.getElementById('openHistoryBtn'),
+        historyCountBadge: document.getElementById('historyCountBadge'),
+        openSettingsBtn: document.getElementById('openSettingsBtn'),
+        statusDot: document.getElementById('statusDot'),
+        historyModal: document.getElementById('historyModal'),
+        closeHistoryBtn: document.getElementById('closeHistoryBtn'),
+        historyList: document.getElementById('historyList'),
+        clearAllHistoryBtn: document.getElementById('clearAllHistoryBtn'),
+        confirmClearBar: document.getElementById('confirmClearBar'),
+        cancelClearAllBtn: document.getElementById('cancelClearAllBtn'),
+        confirmClearAllBtn: document.getElementById('confirmClearAllBtn'),
+
+        settingsModal: document.getElementById('settingsModal'),
+        closeSettingsBtn: document.getElementById('closeSettingsBtn'),
+        customApiKeyInput: document.getElementById('customApiKeyInput'),
+        toggleKeyVisibilityBtn: document.getElementById('toggleKeyVisibilityBtn'),
+        saveApiKeyBtn: document.getElementById('saveApiKeyBtn'),
+        clearApiKeyBtn: document.getElementById('clearApiKeyBtn'),
+        apiKeyModeBadge: document.getElementById('apiKeyModeBadge'),
+
+        // Upload & Input Tabs
+        uploadContainer: document.getElementById('uploadContainer'),
+        tabVideoBtn: document.getElementById('tabVideoBtn'),
+        tabTextBtn: document.getElementById('tabTextBtn'),
+        videoInputPanel: document.getElementById('videoInputPanel'),
+        textInputPanel: document.getElementById('textInputPanel'),
+        videoFileInput: document.getElementById('videoFileInput'),
+        uploadEmptyState: document.getElementById('uploadEmptyState'),
+        videoPreviewState: document.getElementById('videoPreviewState'),
+        videoPreviewPlayer: document.getElementById('videoPreviewPlayer'),
+        videoFileName: document.getElementById('videoFileName'),
+        videoSizeBadge: document.getElementById('videoSizeBadge'),
+        videoDurationBadge: document.getElementById('videoDurationBadge'),
+        videoMethodBadge: document.getElementById('videoMethodBadge'),
+        largeVideoNotice: document.getElementById('largeVideoNotice'),
+        changeVideoBtn: document.getElementById('changeVideoBtn'),
+        removeVideoBtn: document.getElementById('removeVideoBtn'),
+        transcriptInput: document.getElementById('transcriptInput'),
+        transcriptCharCount: document.getElementById('transcriptCharCount'),
+        loadSampleTextBtn: document.getElementById('loadSampleTextBtn'),
+
+        // Mode, Style, Tone, Length
+        modeRecapBtn: document.getElementById('modeRecapBtn'),
+        modeDubbingBtn: document.getElementById('modeDubbingBtn'),
+        styleCards: document.querySelectorAll('.style-card'),
+        toneBtns: document.querySelectorAll('.tone-btn'),
+        lengthBtns: document.querySelectorAll('.length-btn'),
+
+        // Generate & Progress
+        generateBtn: document.getElementById('generateBtn'),
+        generateBtnText: document.getElementById('generateBtnText'),
+        generateIcon: document.getElementById('generateIcon'),
+        progressPanel: document.getElementById('progressPanel'),
+        progressStatusText: document.getElementById('progressStatusText'),
+        progressPercentText: document.getElementById('progressPercentText'),
+        progressBarFill: document.getElementById('progressBarFill'),
+        progressSubNote: document.getElementById('progressSubNote'),
+        errorBanner: document.getElementById('errorBanner'),
+        errorBannerText: document.getElementById('errorBannerText'),
+
+        // Step 2 Result
+        resultSection: document.getElementById('resultSection'),
+        resultMetaLine: document.getElementById('resultMetaLine'),
+        resultStatsBadge: document.getElementById('resultStatsBadge'),
+        resultSamplingInfo: document.getElementById('resultSamplingInfo'),
+        scriptOutputArea: document.getElementById('scriptOutputArea'),
+        saveEditBtn: document.getElementById('saveEditBtn'),
+        copyScriptBtn: document.getElementById('copyScriptBtn'),
+        downloadTxtBtn: document.getElementById('downloadTxtBtn'),
+        downloadSrtBtn: document.getElementById('downloadSrtBtn'),
+
+        // Utilities
+        frameExtractorCanvas: document.getElementById('frameExtractorCanvas'),
+        toastContainer: document.getElementById('toastContainer'),
+      };
+
+      /* =========================================================================
+       * 3. HELPER UTILITIES
+       * ========================================================================= */
+
+      /** Display a non-blocking sleek toast notification */
+      function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        const styles = {
+          success: 'bg-[#1c261d] border-emerald-500/50 text-emerald-200',
+          error: 'bg-[#2a1414] border-red-500/50 text-red-200',
+          info: 'bg-[#231710] border-[#ff8c24]/50 text-[#fceee2]',
+        };
+        toast.className = `pointer-events-auto px-4 py-2.5 rounded-2xl border shadow-xl text-[13px] font-medium text-center backdrop-blur-md transition-all duration-300 opacity-0 translate-y-2 ${styles[type] || styles.info}`;
+        toast.textContent = message;
+        el.toastContainer.appendChild(toast);
+
+        requestAnimationFrame(() => {
+          toast.classList.remove('opacity-0', 'translate-y-2');
+        });
+
+        setTimeout(() => {
+          toast.classList.add('opacity-0', 'translate-y-2');
+          setTimeout(() => toast.remove(), 300);
+        }, 2800);
+      }
+
+      /** Format bytes into readable KB/MB */
+      function formatBytes(bytes) {
+        if (bytes < 1024 * 1024) {
+          return (bytes / 1024).toFixed(1) + ' KB';
+        }
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+      }
+
+      /** Format seconds to MM:SS */
+      function formatTime(seconds) {
+        if (!isFinite(seconds) || seconds < 0) return '00:00';
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      }
+
+      /** Format seconds to SRT timestamp HH:MM:SS,mmm */
+      function formatSrtTime(totalSeconds) {
+        const hrs = Math.floor(totalSeconds / 3600);
+        const mins = Math.floor((totalSeconds % 3600) / 60);
+        const secs = Math.floor(totalSeconds % 60);
+        const ms = Math.floor((totalSeconds % 1) * 1000);
+        return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')},${String(ms).padStart(3, '0')}`;
+      }
+
+      /** Escape HTML safely */
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      /** Copy text reliably even inside sandboxed iFrames */
+      function copyTextToClipboard(text) {
+        try {
+          const tempArea = document.createElement('textarea');
+          tempArea.value = text;
+          tempArea.style.position = 'fixed';
+          tempArea.style.left = '-9999px';
+          tempArea.style.top = '0';
+          document.body.appendChild(tempArea);
+          tempArea.focus();
+          tempArea.select();
+          const successful = document.execCommand('copy');
+          document.body.removeChild(tempArea);
+          if (successful) return true;
+        } catch (err) {
+          // Fallback below
+        }
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).catch(() => {});
+          return true;
+        }
+        return false;
+      }
+
+      /** Trigger browser file download */
+      function downloadFile(content, filename, mimeType = 'text/plain;charset=utf-8') {
+        const blob = new Blob(['\uFEFF' + content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+
+      /** Show/Hide inline error banner */
+      function showError(msg) {
+        el.errorBannerText.textContent = msg;
+        el.errorBanner.classList.remove('hidden');
+      }
+      function clearError() {
+        el.errorBanner.classList.add('hidden');
+        el.errorBannerText.textContent = '';
+      }
+
+      /** Update progress UI */
+      function setProgress(percent, statusText, subNote) {
+        el.progressBarFill.style.width = `${Math.min(100, Math.max(0, percent))}%`;
+        el.progressPercentText.textContent = `${Math.round(percent)}%`;
+        if (statusText) el.progressStatusText.textContent = statusText;
+        if (subNote) el.progressSubNote.textContent = subNote;
+      }
+
+      /** Labels mapping for display */
+      function getModeLabel(mode) {
+        return mode === 'dubbing' ? 'Dubbing Mode' : 'Recap Mode';
+      }
+      function getStyleLabel(style) {
+        const map = {
+          direct: 'Direct Translation',
+          third: 'Third Person',
+          first: 'First Person',
+        };
+        return map[style] || 'Direct Translation';
+      }
+
+      /* =========================================================================
+       * 4. LOCALSTORAGE HISTORY & SETTINGS MANAGEMENT
+       * ========================================================================= */
+      function getHistoryItems() {
+        try {
+          const raw = localStorage.getItem(STORAGE_HISTORY_KEY);
+          const parsed = raw ? JSON.parse(raw) : [];
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return [];
+        }
+      }
+
+      function saveHistoryItems(items) {
+        try {
+          localStorage.setItem(STORAGE_HISTORY_KEY, JSON.stringify(items.slice(0, 50)));
+        } catch {
+          // Ignore storage quota issues gracefully
+        }
+        updateHistoryBadge();
+      }
+
+      function addHistoryEntry(entry) {
+        const items = getHistoryItems();
+        items.unshift(entry);
+        saveHistoryItems(items);
+      }
+
+      function updateHistoryEntryScript(id, newScript) {
+        const items = getHistoryItems();
+        const idx = items.findIndex((item) => item.id === id);
+        if (idx !== -1) {
+          items[idx].script = newScript;
+          saveHistoryItems(items);
+        }
+      }
+
+      function updateHistoryBadge() {
+        const count = getHistoryItems().length;
+        if (count > 0) {
+          el.historyCountBadge.textContent = count > 99 ? '99+' : String(count);
+          el.historyCountBadge.classList.remove('hidden');
+        } else {
+          el.historyCountBadge.classList.add('hidden');
+        }
+      }
+
+      function getSavedApiKey() {
+        try {
+          return (localStorage.getItem(STORAGE_APIKEY_KEY) || '').trim();
+        } catch {
+          return '';
+        }
+      }
+
+      function updateApiKeyStatusUI() {
+        const saved = getSavedApiKey();
+        el.customApiKeyInput.value = saved;
+        if (saved) {
+          el.apiKeyModeBadge.textContent = 'Custom Key Active';
+          el.apiKeyModeBadge.className = 'px-2 py-0.5 rounded-full text-[10.5px] font-semibold bg-amber-950/60 border border-amber-600/50 text-amber-300';
+        } else {
+          el.apiKeyModeBadge.textContent = 'Built-in Active';
+          el.apiKeyModeBadge.className = 'px-2 py-0.5 rounded-full text-[10.5px] font-semibold bg-emerald-950/60 border border-emerald-700/40 text-emerald-300';
+        }
+      }
+
+      /* =========================================================================
+       * 5. UI INTERACTION HANDLERS (TABS, UPLOAD, MODE, STYLE, TONE)
+       * ========================================================================= */
+
+      // Toggle Video Upload vs Text/SRT Mode
+      function setInputTab(tab) {
+        appState.inputTab = tab;
+        clearError();
+        if (tab === 'video') {
+          el.tabVideoBtn.className = 'px-3.5 py-1.5 rounded-full transition-all orange-gradient text-[#1b0e06] font-semibold shadow-sm';
+          el.tabTextBtn.className = 'px-3.5 py-1.5 rounded-full transition-all text-[#b8a393] hover:text-[#f5ece4]';
+          el.videoInputPanel.classList.remove('hidden');
+          el.textInputPanel.classList.add('hidden');
+        } else {
+          el.tabTextBtn.className = 'px-3.5 py-1.5 rounded-full transition-all orange-gradient text-[#1b0e06] font-semibold shadow-sm';
+          el.tabVideoBtn.className = 'px-3.5 py-1.5 rounded-full transition-all text-[#b8a393] hover:text-[#f5ece4]';
+          el.textInputPanel.classList.remove('hidden');
+          el.videoInputPanel.classList.add('hidden');
+        }
+      }
+
+      el.tabVideoBtn.addEventListener('click', () => setInputTab('video'));
+      el.tabTextBtn.addEventListener('click', () => setInputTab('text'));
+
+      // Load sample English movie dialogue/SRT for instant testing
+      el.loadSampleTextBtn.addEventListener('click', () => {
+        const sample = `00:00:00,500 --> 00:00:05,000
+In a world where memories can be bought and sold, Leo wakes up on a rainy rooftop with nothing but a silver key.
+
+00:00:05,200 --> 00:00:10,500
+"Who are you? And why are they chasing me?" he whispers as sirens echo through the neon streets below.
+
+00:00:11,000 --> 00:00:16,800
+A mysterious woman steps out of the shadows and hands him an old photograph. "You erased your own mind to save us, Leo."
+
+00:00:17,200 --> 00:00:22,500
+With only twelve hours left before the city lockdown, Leo must unlock the truth before it disappears forever.`;
+        el.transcriptInput.value = sample;
+        el.transcriptCharCount.textContent = `${sample.length} chars`;
+        showToast('Sample SRT ထည့်သွင်းပြီးပါပြီ', 'info');
+      });
+
+      el.transcriptInput.addEventListener('input', () => {
+        el.transcriptCharCount.textContent = `${el.transcriptInput.value.length} chars`;
+      });
+
+      // Handle selected video file
+      function handleVideoSelection(file) {
+        clearError();
+        if (!file) return;
+
+        if (!file.type.startsWith('video/') && !/\.(mp4|mov|webm|mkv|m4v)$/i.test(file.name)) {
+          showError('ကျေးဇူးပြု၍ MP4, MOV သို့မဟုတ် WEBM Video ဖိုင်ကိုသာ ရွေးချယ်ပါ။');
+          return;
+        }
+
+        if (file.size > MAX_UPLOAD_BYTES) {
+          showError('Video ဖိုင်အရွယ်အစားသည် 500MB ထက် မကျော်ရပါ။');
+          return;
+        }
+
+        // Cleanup previous ObjectURL
+        if (appState.selectedFileUrl) {
+          URL.revokeObjectURL(appState.selectedFileUrl);
+        }
+
+        appState.selectedFile = file;
+        appState.selectedFileUrl = URL.createObjectURL(file);
+        appState.videoDuration = 0;
+
+        el.videoPreviewPlayer.src = appState.selectedFileUrl;
+        el.videoFileName.textContent = file.name;
+        el.videoSizeBadge.textContent = formatBytes(file.size);
+        el.videoDurationBadge.textContent = 'Loading...';
+
+        const isLarge = file.size > DIRECT_VIDEO_MAX_BYTES;
+        if (isLarge) {
+          el.videoMethodBadge.textContent = '8-Frame Sampling';
+          el.videoMethodBadge.className = 'px-2 py-0.5 rounded-md bg-amber-950/60 border border-amber-600/40 text-[11px] text-amber-300 font-medium';
+          el.largeVideoNotice.classList.remove('hidden');
+        } else {
+          el.videoMethodBadge.textContent = 'Direct Video AI';
+          el.videoMethodBadge.className = 'px-2 py-0.5 rounded-md bg-emerald-950/60 border border-emerald-700/40 text-[11px] text-emerald-300 font-medium';
+          el.largeVideoNotice.classList.add('hidden');
+        }
+
+        el.uploadEmptyState.classList.add('hidden');
+        el.videoPreviewState.classList.remove('hidden');
+
+        el.videoPreviewPlayer.onloadedmetadata = () => {
+          appState.videoDuration = el.videoPreviewPlayer.duration || 0;
+          el.videoDurationBadge.textContent = formatTime(appState.videoDuration);
+          if (appState.videoDuration > 300) {
+            showToast('Video သည် 5 မိနစ်ထက်ရှည်ပါသည် (Frame sampling ဖြင့် ဆက်လုပ်နိုင်ပါသည်)', 'info');
+          }
+        };
+      }
+
+      function clearSelectedVideo() {
+        if (appState.selectedFileUrl) {
+          URL.revokeObjectURL(appState.selectedFileUrl);
+        }
+        appState.selectedFile = null;
+        appState.selectedFileUrl = null;
+        appState.videoDuration = 0;
+        el.videoPreviewPlayer.removeAttribute('src');
+        el.videoPreviewPlayer.load();
+        el.videoFileInput.value = '';
+        el.videoPreviewState.classList.add('hidden');
+        el.uploadEmptyState.classList.remove('hidden');
+      }
+
+      // Click & Keyboard for Upload Empty State
+      el.uploadEmptyState.addEventListener('click', () => el.videoFileInput.click());
+      el.uploadEmptyState.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          el.videoFileInput.click();
+        }
+      });
+      el.changeVideoBtn.addEventListener('click', () => el.videoFileInput.click());
+      el.removeVideoBtn.addEventListener('click', clearSelectedVideo);
+      el.videoFileInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files[0]) {
+          handleVideoSelection(e.target.files[0]);
+        }
+      });
+
+      // Drag and Drop Support
+      ['dragenter', 'dragover'].forEach((evt) => {
+        el.uploadContainer.addEventListener(evt, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (appState.inputTab === 'video') {
+            el.uploadContainer.classList.add('dropzone-active');
+          }
+        });
+      });
+
+      ['dragleave', 'drop'].forEach((evt) => {
+        el.uploadContainer.addEventListener(evt, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          el.uploadContainer.classList.remove('dropzone-active');
+        });
+      });
+
+      el.uploadContainer.addEventListener('drop', (e) => {
+        if (appState.inputTab !== 'video') setInputTab('video');
+        const files = e.dataTransfer?.files;
+        if (files && files[0]) {
+          handleVideoSelection(files[0]);
+        }
+      });
+
+      // Mode Selection (Recap Mode vs Dubbing Mode)
+      function setMode(mode) {
+        appState.mode = mode;
+        const buttons = [el.modeRecapBtn, el.modeDubbingBtn];
+        buttons.forEach((btn) => {
+          const isActive = btn.dataset.mode === mode;
+          btn.setAttribute('aria-pressed', String(isActive));
+          const sub = btn.querySelector('.mode-sub');
+          if (isActive) {
+            btn.classList.remove('select-card-inactive');
+            btn.classList.add('select-card-active');
+            sub.classList.remove('text-[#a89485]');
+            sub.classList.add('opacity-85');
+          } else {
+            btn.classList.remove('select-card-active');
+            btn.classList.add('select-card-inactive');
+            sub.classList.add('text-[#a89485]');
+            sub.classList.remove('opacity-85');
+          }
+        });
+      }
+
+      el.modeRecapBtn.addEventListener('click', () => setMode('recap'));
+      el.modeDubbingBtn.addEventListener('click', () => setMode('dubbing'));
+
+      // Style Selection (Direct Translation / Third Person / First Person)
+      function setStyle(style) {
+        appState.style = style;
+        el.styleCards.forEach((card) => {
+          const isActive = card.dataset.style === style;
+          card.setAttribute('aria-pressed', String(isActive));
+          const desc = card.querySelector('.style-desc');
+          if (isActive) {
+            card.classList.remove('select-card-inactive');
+            card.classList.add('select-card-active');
+            desc.classList.remove('text-[#a89485]');
+            desc.classList.add('opacity-85');
+          } else {
+            card.classList.remove('select-card-active');
+            card.classList.add('select-card-inactive');
+            desc.classList.add('text-[#a89485]');
+            desc.classList.remove('opacity-85');
+          }
+        });
+      }
+
+      el.styleCards.forEach((card) => {
+        card.addEventListener('click', () => setStyle(card.dataset.style));
+      });
+
+      // Tone Selection
+      el.toneBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          appState.tone = btn.dataset.tone;
+          el.toneBtns.forEach((b) => {
+            const active = b.dataset.tone === appState.tone;
+            b.className = active
+              ? 'tone-btn px-2.5 py-2 rounded-xl text-[12px] font-semibold border transition-all bg-[#ff841f]/20 border-[#ff8c28] text-[#ffad52]'
+              : 'tone-btn px-2.5 py-2 rounded-xl text-[12px] font-medium border transition-all bg-[#140d09] border-[#2d1f17] text-[#a89485] hover:border-[#473124]';
+          });
+        });
+      });
+
+      // Script Length Selection
+      el.lengthBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          appState.length = btn.dataset.length;
+          el.lengthBtns.forEach((b) => {
+            const active = b.dataset.length === appState.length;
+            b.className = active
+              ? 'length-btn py-1.5 rounded-lg text-[11.5px] font-semibold border bg-[#ff841f]/20 border-[#ff8c28] text-[#ffad52] transition-all'
+              : 'length-btn py-1.5 rounded-lg text-[11.5px] font-medium border bg-[#140d09] border-[#2c1f17] text-[#9c8778] transition-all';
+          });
+        });
+      });
+
+      /* =========================================================================
+       * 6. VIDEO DATA EXTRACTION (DIRECT BASE64 OR 8-FRAME SAMPLING)
+       * ========================================================================= */
+
+      /** Read a File/Blob as pure base64 (without data:* prefix) */
+      function readFileAsBase64(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const res = String(reader.result || '');
+            const idx = res.indexOf(',');
+            resolve(idx >= 0 ? res.slice(idx + 1) : res);
+          };
+          reader.onerror = () => reject(new Error('Video ဖိုင်ကို ဖတ်ရှု၍ မရပါ။'));
+          reader.readAsDataURL(file);
+        });
+      }
+
+      /** Extract N evenly spaced JPEG frames from HTML5 video element */
+      async function extractVideoFrames(videoElement, frameCount = SAMPLE_FRAME_COUNT) {
+        return new Promise(async (resolve, reject) => {
+          try {
+            // Ensure metadata is ready
+            if (videoElement.readyState < 1) {
+              await new Promise((res, rej) => {
+                videoElement.addEventListener('loadedmetadata', res, { once: true });
+                videoElement.addEventListener('error', () => rej(new Error('Video ဖွင့်၍ မရပါ။')), { once: true });
+              });
+            }
+
+            const duration = videoElement.duration;
+            if (!isFinite(duration) || duration <= 0) {
+              reject(new Error('Video အချိန်အတိုင်းအတာကို ဖတ်ရှု၍ မရပါ။'));
+              return;
+            }
+
+            const canvas = el.frameExtractorCanvas;
+            const ctx = canvas.getContext('2d');
+            const targetWidth = Math.min(640, videoElement.videoWidth || 640);
+            const aspect = (videoElement.videoHeight || 360) / (videoElement.videoWidth || 640);
+            canvas.width = targetWidth;
+            canvas.height = Math.round(targetWidth * aspect);
+
+            const frames = [];
+            const originalTime = videoElement.currentTime;
+            videoElement.pause();
+
+            for (let i = 0; i < frameCount; i++) {
+              // Spread timestamps evenly between 3% and 95% of duration
+              const ratio = frameCount === 1 ? 0.5 : 0.03 + (i / (frameCount - 1)) * 0.92;
+              const seekTime = Math.min(duration - 0.1, Math.max(0, duration * ratio));
+
+              await new Promise((resSeek) => {
+                const onSeeked = () => {
+                  videoElement.removeEventListener('seeked', onSeeked);
+                  resSeek();
+                };
+                videoElement.addEventListener('seeked', onSeeked);
+                videoElement.currentTime = seekTime;
+              });
+
+              ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+              const dataUrl = canvas.toDataURL('image/jpeg', 0.74);
+              const base64 = dataUrl.split(',')[1];
+              frames.push({
+                timeFormatted: formatTime(seekTime),
+                seconds: seekTime,
+                base64,
+              });
+
+              const pct = 15 + Math.round(((i + 1) / frameCount) * 35);
+              setProgress(pct, `Video မြင်ကွင်းများ ထုတ်ယူနေသည် (${i + 1}/${frameCount})...`);
+            }
+
+            // Restore preview playhead
+            videoElement.currentTime = originalTime;
+            resolve(frames);
+          } catch (err) {
+            reject(err);
+          }
+        });
+      }
+
+      /* =========================================================================
+       * 7. GEMINI API INTEGRATION WITH EXPONENTIAL BACKOFF
+       * ========================================================================= */
+
+      function buildSystemInstruction() {
+        const modeInstructions = appState.mode === 'dubbing'
+          ? `MODE: Dubbing Mode (Video အပြည့် - ပြောစကားတိုင်း မြန်မာလို အစားထိုး).
+- Output EVERY spoken line or scene beat with clear timestamps in the exact format: [MM:SS - MM:SS] followed by the natural spoken Myanmar dialogue/line on the same or next line.
+- Keep timing concise so a Myanmar voice actor can dub over the original video comfortably.
+- If multiple speakers appear, label them briefly like (ဇာတ်ကောင် ၁): or character names when clear.`
+          : `MODE: Recap Mode (ဇာတ်ကြောင်းပြောသူ ပုံစံ Script).
+- Write a cohesive, engaging, natural Myanmar voice-over recap script suitable for TikTok / Facebook / YouTube movie recap narration.
+- Start with a catchy opening hook that pulls viewers in immediately.
+- Organize into clean, easy-to-read narration paragraphs with natural pacing and transitions.`;
+
+        const styleInstructions = {
+          direct: `NARRATION POV STYLE: Direct Translation (မူရင်း POV နှင့် အဓိပ္ပာယ်ကို မပြောင်းဘဲ ဘာသာပြန်မယ်).
+- Stay strictly faithful to the original point of view, dialogue meaning, and nuance without inventing unrelated plot points.`,
+          third: `NARRATION POV STYLE: Third Person (ပြင်ပဇာတ်ကြောင်းပြောသူအနေနဲ့ ဖြစ်စဉ်ကို ပြောမယ်).
+- Narrate entirely as an outside storyteller observing the events (e.g., using natural Burmese third-person phrasing such as သူက, သူမက, ဒီကောင်လေးက, ဇာတ်ကောင်က).`,
+          first: `NARRATION POV STYLE: First Person (အဓိကဇာတ်ကောင် ကိုယ်တိုင်ပြောသလို ပြောမယ်).
+- Narrate immersively from the main protagonist's own perspective (using ကျွန်တော် or ကျွန်မ consistently as if they are recounting their own experience).`,
+        }[appState.style];
+
+        const toneInstructions = {
+          normal: `TONE: Balanced, clear, natural modern spoken Myanmar (Unicode) that sounds smooth when read aloud.`,
+          dramatic: `TONE: Dramatic Movie Recap style — suspenseful, emotional, cinematic Burmese storytelling with strong pacing and engaging hooks (like popular Myanmar movie recap channels).`,
+          casual: `TONE: Casual Spoken Burmese — friendly, conversational, lively everyday Burmese (ပြောစကားဟန်) that feels relatable and fun.`,
+        }[appState.tone];
+
+        const lengthInstructions = {
+          short: `LENGTH: Concise and punchy — summarize tightly while keeping the core story and key moments.`,
+          standard: `LENGTH: Standard natural length — well-paced and complete.`,
+          detailed: `LENGTH: Detailed and rich — capture full emotional beats, scene details, and dialogue nuances.`,
+        }[appState.length];
+
+        return `You are RecapMM, an expert Burmese (Myanmar Unicode) scriptwriter, translator, and movie recap narrator.
+Your job is to produce authentic, fluent, natural-sounding Myanmar scripts ready for voice-over recording.
+
+${modeInstructions}
+
+${styleInstructions}
+
+${toneInstructions}
+
+${lengthInstructions}
+
+CRITICAL RULES:
+1. Write strictly in clean Myanmar Unicode (never Zawgyi).
+2. Avoid stiff, robotic word-for-word translation; make every sentence flow naturally when spoken aloud in Burmese.
+3. Output ONLY the ready-to-use Myanmar script (no English meta-commentary, no "Here is your script:" preamble, no markdown code fences).`;
+      }
+
+      /** Fetch wrapper with exponential backoff (1s, 2s, 4s) */
+      async function callGeminiWithRetry(payload, activeKey, maxRetries = 3) {
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${encodeURIComponent(activeKey)}`;
+        let delayMs = 1000;
+
+        for (let attempt = 0; attempt <= maxRetries; attempt++) {
+          try {
+            const response = await fetch(apiUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            });
+
+            if (response.ok) {
+              return await response.json();
+            }
+
+            // Retry on rate limit or transient server errors
+            if ((response.status === 429 || response.status >= 500) && attempt < maxRetries) {
+              await new Promise((r) => setTimeout(r, delayMs));
+              delayMs *= 2;
+              continue;
+            }
+
+            let errDetail = `HTTP ${response.status}`;
+            try {
+              const errJson = await response.json();
+              if (errJson?.error?.message) errDetail = errJson.error.message;
+            } catch {
+              // ignore parse error
+            }
+            throw new Error(errDetail);
+          } catch (err) {
+            if (attempt < maxRetries && (err.name === 'TypeError' || /network|fetch/i.test(err.message))) {
+              await new Promise((r) => setTimeout(r, delayMs));
+              delayMs *= 2;
+              continue;
+            }
+            throw err;
+          }
+        }
+      }
+
+      /* =========================================================================
+       * 8. MAIN GENERATION FLOW
+       * ========================================================================= */
+      async function handleGenerateScript() {
+        if (appState.isGenerating) return;
+        clearError();
+
+        // Validate input depending on active tab
+        let sourceLabel = '';
+        if (appState.inputTab === 'video') {
+          if (!appState.selectedFile) {
+            showError('ကျေးဇူးပြု၍ Video ဖိုင်တစ်ခု ရွေးချယ်ပါ (သို့မဟုတ် "Text / SRT ထည့်ရန်" tab သို့ပြောင်း၍ စာသားထည့်ပါ)။');
+            return;
+          }
+          sourceLabel = appState.selectedFile.name;
+        } else {
+          const textVal = el.transcriptInput.value.trim();
+          if (!textVal) {
+            showError('ကျေးဇူးပြု၍ Subtitle (SRT) သို့မဟုတ် Transcript စာသား ထည့်သွင်းပါ။');
+            el.transcriptInput.focus();
+            return;
+          }
+          sourceLabel = textVal.slice(0, 32).replace(/\s+/g, ' ') + (textVal.length > 32 ? '...' : '');
+        }
+
+        // Enter loading state
+        appState.isGenerating = true;
+        appState.usedFrameSampling = false;
+        el.generateBtn.disabled = true;
+        el.generateBtn.classList.remove('cta-glow');
+        el.generateBtnText.textContent = 'ဖန်တီးနေပါသည်...';
+        el.progressPanel.classList.remove('hidden');
+        setProgress(10, 'အချက်အလက်များ ပြင်ဆင်နေပါသည်...', 'ခေတ္တစောင့်ဆိုင်းပေးပါ...');
+
+        try {
+          const userParts = [];
+
+          if (appState.inputTab === 'video') {
+            const file = appState.selectedFile;
+            const durationText = appState.videoDuration > 0 ? formatTime(appState.videoDuration) : 'unknown duration';
+
+            if (file.size <= DIRECT_VIDEO_MAX_BYTES) {
+              // Direct Video Base64 Mode (<= 15MB)
+              setProgress(28, 'Video ဖိုင်ကို AI အတွက် ပြင်ဆင်နေသည်...', 'Direct Video AI စနစ်ဖြင့် အသံနှင့် မြင်ကွင်းနှစ်မျိုးလုံး ဖတ်ရှုနေပါသည်။');
+              const base64Video = await readFileAsBase64(file);
+              const mimeType = file.type && file.type.startsWith('video/') ? file.type : 'video/mp4';
+
+              userParts.push({
+                inlineData: {
+                  mimeType,
+                  data: base64Video,
+                },
+              });
+              userParts.push({
+                text: `Analyze the full audio dialogue, narration, and visual scenes of this video (duration: ${durationText}) and generate the Myanmar script strictly following the requested Mode, POV Style, Tone, and Length.`,
+              });
+            } else {
+              // Smart 8-Frame Sampling Mode (> 15MB)
+              appState.usedFrameSampling = true;
+              setProgress(15, 'Video မြင်ကွင်း 8 ခု ထုတ်ယူနေသည်...', '15MB ထက်ကျော်သော Video အတွက် Frame Sampling စနစ် အသုံးပြုနေပါသည်။');
+              const frames = await extractVideoFrames(el.videoPreviewPlayer, SAMPLE_FRAME_COUNT);
+
+              const timelineSummary = frames.map((f, idx) => `Frame ${idx + 1} at ${f.timeFormatted}`).join(', ');
+              userParts.push({
+                text: `These ${frames.length} chronological video keyframes were sampled evenly across a video of total duration ${durationText} (${timelineSummary}). Based on the visual sequence, characters, actions, expressions, and any visible captions/subtitles, write an engaging, coherent Myanmar script following the selected Mode, POV Style, Tone, and Length. ${appState.mode === 'dubbing' ? 'Include estimated [MM:SS - MM:SS] timestamps spanning the video duration.' : ''}`,
+              });
+
+              frames.forEach((frame) => {
+                userParts.push({
+                  inlineData: {
+                    mimeType: 'image/jpeg',
+                    data: frame.base64,
+                  },
+                });
+              });
+            }
+          } else {
+            // Text / SRT Input Mode
+            setProgress(35, 'စာသားများကို AI ထံ ပေးပို့နေသည်...', 'မြန်မာဘာသာပြန် Script ရေးသားနေပါသည်။');
+            userParts.push({
+              text: `Convert and translate the following transcript / SRT subtitles into a natural Myanmar script following the selected Mode, POV Style, Tone, and Length:\n\n${el.transcriptInput.value.trim()}`,
+            });
+          }
+
+          setProgress(62, 'Gemini AI ဖြင့် မြန်မာ Script ရေးသားနေသည်...', 'ဇာတ်ကြောင်းနှင့် ပြောစကားများကို သဘာဝကျအောင် ဖန်တီးနေပါသည်။');
+
+          const payload = {
+            contents: [{ role: 'user', parts: userParts }],
+            systemInstruction: {
+              parts: [{ text: buildSystemInstruction() }],
+            },
+            generationConfig: {
+              temperature: 0.75,
+            },
+          };
+
+          // Use custom saved API key if provided, else empty string for Canvas runtime
+          const activeKey = getSavedApiKey() || defaultApiKey;
+          const result = await callGeminiWithRetry(payload, activeKey);
+
+          setProgress(92, 'Script ကို စစ်ဆေးပြင်ဆင်နေသည်...', 'ပြီးခါနီးပါပြီ...');
+
+          const generatedText = result?.candidates?.[0]?.content?.parts
+            ?.map((p) => p.text || '')
+            .join('\n')
+            .trim();
+
+          if (!generatedText) {
+            throw new Error('AI ထံမှ Script ရလဒ် မရရှိပါ။ Video သို့မဟုတ် စာသားကို ပြန်လည်စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။');
+          }
+
+          setProgress(100, 'Script ဖန်တီးမှု ပြီးမြောက်ပါပြီ!', '');
+
+          // Save to localStorage History
+          const entry = {
+            id: 'recap_' + Date.now(),
+            createdAt: new Date().toISOString(),
+            sourceName: sourceLabel,
+            mode: appState.mode,
+            style: appState.style,
+            tone: appState.tone,
+            usedFrameSampling: appState.usedFrameSampling,
+            script: generatedText,
+          };
+          addHistoryEntry(entry);
+
+          // Render output into Step 2 Card
+          displayScriptResult(entry);
+          showToast('မြန်မာ Script ဖန်တီးပြီးပါပြီ!', 'success');
+
+        } catch (err) {
+          let friendlyMsg = err?.message || 'အမှားအယွင်း ဖြစ်ပွားခဲ့ပါသည်။ ထပ်မံကြိုးစားကြည့်ပါ။';
+          if (/API_KEY_INVALID|API key not valid/i.test(friendlyMsg)) {
+            friendlyMsg = 'API Key မှားယွင်းနေပါသည်။ ညာဘက်အပေါ်ရှိ "Z" Settings တွင် မှန်ကန်သော Gemini API Key ကို စစ်ဆေးပါ။';
+          } else if (/413|payload|too large/i.test(friendlyMsg)) {
+            friendlyMsg = 'Video ဖိုင်အရွယ်အစား ကြီးလွန်းနေပါသည်။ ပိုတိုသော Video ကို ရွေးချယ်ပါ သို့မဟုတ် Text / SRT tab ကို သုံးပါ။';
+          }
+          showError(friendlyMsg);
+          showToast('Script ဖန်တီးမှု မအောင်မြင်ပါ', 'error');
+        } finally {
+          appState.isGenerating = false;
+          el.generateBtn.disabled = false;
+          el.generateBtn.classList.add('cta-glow');
+          el.generateBtnText.textContent = 'Script ဖန်တီးမယ်';
+          setTimeout(() => {
+            el.progressPanel.classList.add('hidden');
+          }, 600);
+        }
+      }
+
+      el.generateBtn.addEventListener('click', handleGenerateScript);
+
+      /* =========================================================================
+       * 9. RESULT DISPLAY, EDITING, COPY, TXT & SRT EXPORT
+       * ========================================================================= */
+      function updateScriptStats() {
+        const text = el.scriptOutputArea.value.trim();
+        const chars = text.length;
+        const lines = text ? text.split(/\n+/).filter((l) => l.trim()).length : 0;
+        el.resultStatsBadge.textContent = `${lines} ကြောင်း · ${chars} လုံး`;
+      }
+
+      function displayScriptResult(entry) {
+        appState.currentHistoryId = entry.id;
+        el.scriptOutputArea.value = entry.script;
+        el.resultMetaLine.textContent = `${getModeLabel(entry.mode)} · ${getStyleLabel(entry.style)} · ${entry.sourceName}`;
+        el.saveEditBtn.classList.add('hidden');
+
+        if (entry.usedFrameSampling) {
+          el.resultSamplingInfo.classList.remove('hidden');
+        } else {
+          el.resultSamplingInfo.classList.add('hidden');
+        }
+
+        updateScriptStats();
+        el.resultSection.classList.remove('hidden');
+        setTimeout(() => {
+          el.resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 80);
+      }
+
+      el.scriptOutputArea.addEventListener('input', () => {
+        updateScriptStats();
+        if (appState.currentHistoryId) {
+          el.saveEditBtn.classList.remove('hidden');
+        }
+      });
+
+      el.saveEditBtn.addEventListener('click', () => {
+        if (appState.currentHistoryId) {
+          updateHistoryEntryScript(appState.currentHistoryId, el.scriptOutputArea.value);
+          el.saveEditBtn.classList.add('hidden');
+          showToast('ပြင်ဆင်မှုကို မှတ်တမ်းတွင် သိမ်းပြီးပါပြီ', 'success');
+        }
+      });
+
+      // Copy Script
+      el.copyScriptBtn.addEventListener('click', () => {
+        const text = el.scriptOutputArea.value.trim();
+        if (!text) return;
+        copyTextToClipboard(text);
+        showToast('Script ကို Clipboard သို့ ကူးယူပြီးပါပြီ!', 'success');
+      });
+
+      // Download .TXT
+      el.downloadTxtBtn.addEventListener('click', () => {
+        const text = el.scriptOutputArea.value.trim();
+        if (!text) return;
+        const stamp = new Date().toISOString().slice(0, 10);
+        downloadFile(text, `RecapMM-Script-${stamp}.txt`, 'text/plain;charset=utf-8');
+        showToast('TXT ဖိုင်ကို သိမ်းဆည်းပြီးပါပြီ', 'success');
+      });
+
+      /** Convert generated script (timestamped or plain paragraphs) into valid SRT format */
+      function convertScriptToSrt(rawText) {
+        const lines = rawText.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+        const srtBlocks = [];
+        // Match patterns like [00:00 - 00:05] text OR 00:00 - 00:05 text
+        const timeRegex = /^\[?(\d{1,2}):(\d{2})(?::(\d{2}))?\s*[-–>to]+\s*(\d{1,2}):(\d{2})(?::(\d{2}))?\]?\s*(.*)$/i;
+
+        const parseToSec = (a, b, c) => {
+          if (c !== undefined) return Number(a) * 3600 + Number(b) * 60 + Number(c);
+          return Number(a) * 60 + Number(b);
+        };
+
+        let matchedCount = 0;
+        for (let i = 0; i < lines.length; i++) {
+          const match = lines[i].match(timeRegex);
+          if (match) {
+            matchedCount++;
+            const startSec = parseToSec(match[1], match[2], match[3]);
+            let endSec = parseToSec(match[4], match[5], match[6]);
+            if (endSec <= startSec) endSec = startSec + 4;
+
+            let captionText = (match[7] || '').trim();
+            // If text is on the following line (without a timestamp), attach it
+            if (!captionText && i + 1 < lines.length && !timeRegex.test(lines[i + 1])) {
+              captionText = lines[i + 1];
+              i++;
+            }
+            if (captionText) {
+              srtBlocks.push(
+                `${srtBlocks.length + 1}\n${formatSrtTime(startSec)} --> ${formatSrtTime(endSec)}\n${captionText}`
+              );
+            }
+          }
+        }
+
+        // If script had no timestamps (e.g., Recap Mode paragraphs), auto-segment into 5-second cues
+        if (matchedCount === 0 || srtBlocks.length === 0) {
+          let cursor = 0;
+          lines.forEach((line, idx) => {
+            // Estimate natural reading duration (min 3s, max 9s based on length)
+            const dur = Math.min(9, Math.max(3, Math.round(line.length / 18)));
+            srtBlocks.push(
+              `${idx + 1}\n${formatSrtTime(cursor)} --> ${formatSrtTime(cursor + dur)}\n${line}`
+            );
+            cursor += dur;
+          });
+        }
+
+        return srtBlocks.join('\n\n') + '\n';
+      }
+
+      // Download .SRT
+      el.downloadSrtBtn.addEventListener('click', () => {
+        const text = el.scriptOutputArea.value.trim();
+        if (!text) return;
+        const srtContent = convertScriptToSrt(text);
+        const stamp = new Date().toISOString().slice(0, 10);
+        downloadFile(srtContent, `RecapMM-Subtitles-${stamp}.srt`, 'application/x-subrip;charset=utf-8');
+        showToast('SRT Subtitle ဖိုင်ကို သိမ်းဆည်းပြီးပါပြီ', 'success');
+      });
+
+      /* =========================================================================
+       * 10. HISTORY MODAL LOGIC
+       * ========================================================================= */
+      function renderHistoryModal() {
+        const items = getHistoryItems();
+        el.confirmClearBar.classList.add('hidden');
+
+        if (items.length === 0) {
+          el.clearAllHistoryBtn.classList.add('hidden');
+          el.historyList.innerHTML = `
+            <div class="text-center py-12 px-4">
+              <div class="w-12 h-12 rounded-2xl bg-[#20150f] border border-[#34241a] mx-auto mb-3 flex items-center justify-center text-[#8d796b]">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="16" y1="13" x2="8" y2="13" />
+                  <line x1="16" y1="17" x2="8" y2="17" />
+                </svg>
+              </div>
+              <p class="text-[14px] font-semibold text-[#e6d6c9]">မှတ်တမ်း မရှိသေးပါ</p>
+              <p class="text-[12px] text-[#8d796b] mt-1">Script ဖန်တီးပြီးတိုင်း ဤနေရာတွင် အလိုအလျောက် သိမ်းဆည်းပေးပါမည်။</p>
+            </div>
+          `;
+          return;
+        }
+
+        el.clearAllHistoryBtn.classList.remove('hidden');
+        el.historyList.innerHTML = items.map((item) => {
+          const dateStr = new Date(item.createdAt).toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+          });
+          const preview = item.script.slice(0, 120).replace(/\n+/g, ' ') + (item.script.length > 120 ? '...' : '');
+          return `
+            <div class="rounded-2xl bg-[#110b08] border border-[#2d1f17] hover:border-[#4b3325] p-3.5 transition-colors">
+              <div class="flex items-start justify-between gap-2 mb-2">
+                <div class="min-w-0">
+                  <p class="text-[13px] font-bold text-[#faf4ef] truncate">${escapeHtml(item.sourceName || 'Untitled')}</p>
+                  <div class="flex flex-wrap items-center gap-1.5 mt-1">
+                    <span class="px-2 py-0.5 rounded-md bg-[#261a12] border border-[#3d291d] text-[10.5px] font-semibold text-[#ffad4d]">${escapeHtml(getModeLabel(item.mode))}</span>
+                    <span class="px-2 py-0.5 rounded-md bg-[#1e1510] border border-[#312219] text-[10.5px] text-[#cbb6a6]">${escapeHtml(getStyleLabel(item.style))}</span>
+                    <span class="text-[10.5px] text-[#7c695b]">${escapeHtml(dateStr)}</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  data-delete-id="${escapeHtml(item.id)}"
+                  aria-label="ဖျက်ရန်"
+                  class="history-delete-btn p-1.5 rounded-lg text-[#8c7769] hover:text-red-300 hover:bg-red-950/40 transition-colors shrink-0"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                    <path d="M10 11v6M14 11v6" />
+                  </svg>
+                </button>
+              </div>
+              <p class="text-[12.5px] text-[#b49f90] leading-relaxed mb-3 font-myanmar">${escapeHtml(preview)}</p>
+              <div class="flex items-center gap-2">
+                <button
+                  type="button"
+                  data-load-id="${escapeHtml(item.id)}"
+                  class="history-load-btn flex-1 py-2 rounded-xl orange-gradient text-[#1a0d05] font-bold text-[12px] transition-transform active:scale-95"
+                >
+                  ဖွင့်ကြည့်မယ်
+                </button>
+                <button
+                  type="button"
+                  data-copy-id="${escapeHtml(item.id)}"
+                  class="history-copy-btn px-3.5 py-2 rounded-xl bg-[#231811] hover:bg-[#312117] border border-[#3a281d] text-[#f2e8df] font-medium text-[12px] transition-colors"
+                >
+                  ကူးယူမယ်
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Bind item actions
+        el.historyList.querySelectorAll('.history-load-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const target = getHistoryItems().find((i) => i.id === btn.dataset.loadId);
+            if (target) {
+              closeHistoryModal();
+              displayScriptResult(target);
+              showToast('မှတ်တမ်းမှ Script ကို ပြန်ဖွင့်ပြီးပါပြီ', 'info');
+            }
+          });
+        });
+
+        el.historyList.querySelectorAll('.history-copy-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const target = getHistoryItems().find((i) => i.id === btn.dataset.copyId);
+            if (target) {
+              copyTextToClipboard(target.script);
+              showToast('Script ကို ကူးယူပြီးပါပြီ!', 'success');
+            }
+          });
+        });
+
+        el.historyList.querySelectorAll('.history-delete-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const filtered = getHistoryItems().filter((i) => i.id !== btn.dataset.deleteId);
+            saveHistoryItems(filtered);
+            renderHistoryModal();
+            showToast('မှတ်တမ်းတစ်ခု ဖျက်လိုက်ပါပြီ', 'info');
+          });
+        });
+      }
+
+      function openHistoryModal() {
+        renderHistoryModal();
+        el.historyModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeHistoryModal() {
+        el.historyModal.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+
+      el.openHistoryBtn.addEventListener('click', openHistoryModal);
+      el.closeHistoryBtn.addEventListener('click', closeHistoryModal);
+      el.historyModal.addEventListener('click', (e) => {
+        if (e.target === el.historyModal) closeHistoryModal();
+      });
+
+      el.clearAllHistoryBtn.addEventListener('click', () => {
+        el.confirmClearBar.classList.remove('hidden');
+      });
+      el.cancelClearAllBtn.addEventListener('click', () => {
+        el.confirmClearBar.classList.add('hidden');
+      });
+      el.confirmClearAllBtn.addEventListener('click', () => {
+        saveHistoryItems([]);
+        renderHistoryModal();
+        showToast('မှတ်တမ်းအားလုံး ဖျက်ပြီးပါပြီ', 'info');
+      });
+
+      /* =========================================================================
+       * 11. SETTINGS MODAL LOGIC (AVATAR "Z")
+       * ========================================================================= */
+      function openSettingsModal() {
+        updateApiKeyStatusUI();
+        el.settingsModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeSettingsModal() {
+        el.settingsModal.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+
+      el.openSettingsBtn.addEventListener('click', openSettingsModal);
+      el.closeSettingsBtn.addEventListener('click', closeSettingsModal);
+      el.settingsModal.addEventListener('click', (e) => {
+        if (e.target === el.settingsModal) closeSettingsModal();
+      });
+
+      el.toggleKeyVisibilityBtn.addEventListener('click', () => {
+        el.customApiKeyInput.type = el.customApiKeyInput.type === 'password' ? 'text' : 'password';
+      });
+
+      el.saveApiKeyBtn.addEventListener('click', () => {
+        const keyVal = el.customApiKeyInput.value.trim();
+        try {
+          if (keyVal) {
+            localStorage.setItem(STORAGE_APIKEY_KEY, keyVal);
+            showToast('Custom API Key ကို သိမ်းဆည်းပြီးပါပြီ', 'success');
+          } else {
+            localStorage.removeItem(STORAGE_APIKEY_KEY);
+            showToast('Built-in API စနစ်သို့ ပြန်ပြောင်းပြီးပါပြီ', 'info');
+          }
+        } catch {
+          showToast('Storage သိမ်းဆည်း၍ မရပါ', 'error');
+        }
+        updateApiKeyStatusUI();
+      });
+
+      el.clearApiKeyBtn.addEventListener('click', () => {
+        try {
+          localStorage.removeItem(STORAGE_APIKEY_KEY);
+        } catch {
+          // ignore
+        }
+        el.customApiKeyInput.value = '';
+        updateApiKeyStatusUI();
+        showToast('Custom API Key ကို ဖျက်လိုက်ပါပြီ', 'info');
+      });
+
+      // Close open modals on Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          if (!el.historyModal.classList.contains('hidden')) closeHistoryModal();
+          if (!el.settingsModal.classList.contains('hidden')) closeSettingsModal();
+        }
+      });
+
+      /* =========================================================================
+       * 12. INITIALIZE ON LOAD
+       * ========================================================================= */
+      updateHistoryBadge();
+      updateApiKeyStatusUI();
+    })();
+  </script>
+</body>
+</html>
